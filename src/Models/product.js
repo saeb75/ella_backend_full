@@ -8,15 +8,16 @@ const ProductSchema = new mongoose.Schema(
       required: true,
     },
     slug: { type: String, required: true, unique: true },
-    price: { type: String, required: true },
-    color: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Color",
-    },
+    price: { type: Number, required: true },
+
     productDetails: [
       {
         size: { type: String },
         quantity: { type: String },
+        color: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Color",
+        },
       },
     ],
     productImg: [
@@ -39,6 +40,9 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+    },
+    brand: {
+      type: String,
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

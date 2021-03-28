@@ -15,6 +15,7 @@ exports.addProduct = (req, res) => {
     color,
     productImg,
     price,
+    brand,
   } = req.body;
 
   let productImgArray = [];
@@ -26,7 +27,7 @@ exports.addProduct = (req, res) => {
   let productDetailsArray = [];
   if (productDetails) {
     productDetailsArray = productDetails.map((item) => {
-      return { size: item.size, quantity: item.quantity };
+      return { size: item.size, quantity: item.quantity, color: item.color };
     });
   }
   let productObj = {
@@ -36,7 +37,7 @@ exports.addProduct = (req, res) => {
     productImg: productImgArray,
     productDetails: productDetailsArray,
     category,
-    color,
+    brand,
     price,
   };
 
@@ -66,7 +67,7 @@ exports.getProducts = async (req, res) => {
   let total = await Product.countDocuments({});
   console.log(Math.ceil(total / PAGE_SIZE));
   await Product.find({})
-    .populate("productImg.img")
+    .populate("productImg.img ")
     .limit(PAGE_SIZE)
     .skip(PAGE_SIZE * (page - 1))
     .exec((err, _products) => {
@@ -91,25 +92,59 @@ exports.deleteProduct = (req, res) => {
 };
 
 exports.getProductsByCategories = async (req, res) => {
-  let { slug } = req.body;
-
+  console.log(req.body);
+  let { slug, size, brand } = req.body;
+  let filterObj = {};
   let categoryId = await category.find({ slug }).select("_id");
+  let colorFilter = {};
   if (categoryId[0]) {
-    let filterObj = {};
     filterObj.category = categoryId[0]._id;
 
     if (req.body.color) {
       let colorId = await color.find({ enName: req.body.color });
+
       if (colorId[0]) {
-        filterObj.color = colorId[0]._id;
+        colorFilter = {
+          color: colorId[0]._id,
+        };
       }
     }
-    if (req.body.size) {
-      filterObj.productDetails = { $elemMatch: { size: req.body.size } };
+    let sizeFilter = {};
+    if (size) {
+      list = [];
+      size.map((item) => {
+        list.push({ size: item });
+      });
+      if (list.length > 0) {
+        sizeFilter = {
+          $or: list,
+        };
+      }
     }
-    console.log(filterObj);
+    filterObj.productDetails = {
+      $elemMatch: { ...sizeFilter, ...colorFilter },
+    };
+
+    if (req.body.price) {
+      if (req.body.price.length > 0) {
+        filterObj.price = { $lt: req.body.price[1], $gt: req.body.price[0] };
+      }
+    }
+    if (brand) {
+      if (brand.length > 0) {
+        let brandList = [];
+        brand.map((item) => {
+          brandList.push(item);
+        });
+
+        if (brandList.length > 0) {
+          filterObj.brand = { $in: brandList };
+        }
+      }
+    }
+
     Product.find(filterObj)
-      .populate("category productImg.img color")
+      .populate("category productImg.img productDetails.color")
       .exec((err, products) => {
         if (err) return res.status(400).json(err);
         if (products) {
@@ -123,11 +158,11 @@ exports.getProductsByCategories = async (req, res) => {
 
 exports.getProductsDetails = async (req, res) => {
   let { slug } = req.body;
-  console.log(slug);
+
   let categoryId = await category.find(slug).select("_id");
   if (categoryId[0]) {
     Product.find({ category: categoryId[0]._id })
-      .populate("category productImg.img color")
+      .populate("category productImg.img productDetails.color")
       .exec((err, products) => {
         if (err) return res.status(400).json(err);
         if (products) {
@@ -141,8 +176,8 @@ exports.getProductsDetails = async (req, res) => {
 
 exports.getProduct = (req, res) => {
   let { slug } = req.body;
-  Product.find({ slug })
-    .populate("color category productImg.img")
+  Product.findOne({ slug })
+    .populate("productDetails.color category productImg.img")
     .exec((err, product) => {
       if (err) return err;
       if (product) {

@@ -12,13 +12,24 @@ require("dotenv").config();
 
 app.use(morgan("dev"));
 mongoose
+  .connect(
+    `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@saebecommerce.rgwbq.mongodb.net/${process.env.MONGODB_DATABASE}?retryWrites=true&w=majority`,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+      useCreateIndex: true,
+    }
+  )
+  .then(() => console.log("mongoose conected..."));
+/* mongoose
   .connect("mongodb://localhost:27017/ella", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
     useCreateIndex: true,
   })
-  .then(() => console.log("mongoose conected..."));
+  .then(() => console.log("mongoose conected...")); */
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.json({ limit: "50mb" }));

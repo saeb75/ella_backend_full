@@ -6,6 +6,7 @@ const {
 } = require("../Controllers/bannerController");
 
 const router = express.Router();
+router.post("/banner/category/add", addBanner);
 router.post("/banner/add", addBannerInfo);
 router.get("/banner/get", getBanner);
 

@@ -160,10 +160,9 @@ exports.updateUser = async (req, res) => {
   let newUpdate = { firstName, lastName, role };
   let myprofilePicture = {};
   if (req.file) {
-    newUpdate.profilePicture =
-      process.env.API_URL + "/public/" + req.file.filename;
+    newUpdate.profilePicture = "/public/" + req.file.filename;
   }
-
+  /* process.env.API_URL + */
   let saeb = await User.findOneAndUpdate(
     { _id },
     { $set: newUpdate },

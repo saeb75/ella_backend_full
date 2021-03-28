@@ -139,7 +139,7 @@ exports.getAllEmail = (req, res) => {
 
 exports.signinUser = (req, res) => {
   const { email, password } = req.body;
-
+  console.log(req.body);
   user.findOne({ email }).exec((err, user) => {
     if (err || !user)
       return res.status(400).json({
@@ -157,7 +157,7 @@ exports.signinUser = (req, res) => {
         profilePicture,
       } = user;
 
-      if (user.authenticate(req.body.password) && role == "user") {
+      if (user.authenticate(req.body.password)) {
         let token = jwt.sign(
           { user: { _id, role, email, firstName, lastName, profilePicture } },
           process.env.LOGIN_JWT,

@@ -28,7 +28,6 @@ exports.addSlide = (req, res) => {
   });
 };
 exports.getSlides = (req, res) => {
-  console.log("saeb");
   Slider.findOne({ name: "mainSlider" })
     .populate("slides.image")
     .exec((err, slider) => {
