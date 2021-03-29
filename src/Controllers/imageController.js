@@ -3,8 +3,9 @@ const image = require("../Models/image");
 exports.addImage = (req, res) => {
   let newImage;
   if (req.file) {
-    newImage = `${process.env.API_URL}` + `/public/${req.file.filename}`;
+    newImage = `${process.env.API}` + `/public/${req.file.filename}`;
   }
+  console.log(process.env.API);
   /*   ${process.env.API_URL} */
   let addImage = new image({ image: newImage });
   addImage.save((err, _image) => {
