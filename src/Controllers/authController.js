@@ -64,7 +64,7 @@ exports.registerUser = (req, res) => {
         html: `<p>hello ${firstName}</p>
               <p>For Activation Click the Activation button</p>
 
-             <a style={padding:'20px',background-color : blue, display:block} href='http://localhost:3000/active/account/${token}'>فعال سازی حساب کاربری</a>
+             <a style={padding:'20px',background-color : blue, display:block} href='http://saeb-mern-ecommerce.herokuapp.com/active/account/${token}'>فعال سازی حساب کاربری</a>
       `,
       };
 
