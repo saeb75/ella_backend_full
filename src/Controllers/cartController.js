@@ -15,7 +15,7 @@ exports.addToCart = (req, res) => {
   let { cartItems } = req.body;
 
   const { user } = req.user;
-  console.log(cartItems);
+
   Cart.findOne({ user: user._id }).exec((err, cart) => {
     let promiseArray = [];
     if (err) return res.status(400).json(err);
@@ -110,7 +110,7 @@ exports.getCartItmes = (req, res) => {
 exports.removeItem = (req, res) => {
   let { user } = req.user;
   let { color, size, id } = req.body;
-  console.log({ color: color._id, size, id });
+
   Cart.updateOne(
     {},
     { $pull: { cartItems: { color: color._id, size, product: id } } }

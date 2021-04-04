@@ -13,9 +13,21 @@ exports.addFeature = (req, res) => {
   });
 };
 
+exports.addToFeature = (req, res) => {
+  const { name, _id } = req.body;
+  Featured.findOneAndUpdate(
+    { name },
+    { $push: { products: _id } },
+    { new: true }
+  ).exec((err, list) => {
+    if (err) return err;
+    if (list) {
+      return res.status(400).json(list);
+    }
+  });
+};
 exports.addToDiscount = (req, res) => {
   const { _id, discount, name } = req.body;
-  console.log(req.body);
   product
     .findByIdAndUpdate({ _id }, { $set: { discount } }, { new: true })
     .exec(async (err, _product) => {

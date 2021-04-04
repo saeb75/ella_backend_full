@@ -4,9 +4,8 @@ exports.addImage = (req, res) => {
   let newImage;
   if (req.file) {
     newImage = req.file.location;
-    console.log(req.file.location);
   }
-  console.log(process.env.API);
+
   /*   ${process.env.API_URL} */
   let addImage = new image({ image: newImage });
   addImage.save((err, _image) => {

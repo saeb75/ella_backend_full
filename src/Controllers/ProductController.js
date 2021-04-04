@@ -65,7 +65,7 @@ exports.getProducts = async (req, res) => {
   const PAGE_SIZE = 8;
   let page = parseInt(req.query.page) || "1";
   let total = await Product.countDocuments({});
-  console.log(Math.ceil(total / PAGE_SIZE));
+
   await Product.find({})
     .populate("productImg.img ")
     .limit(PAGE_SIZE)
@@ -92,14 +92,20 @@ exports.deleteProduct = (req, res) => {
 };
 
 exports.getProductsByCategories = async (req, res) => {
-  console.log(req.body);
   let { slug, size, brand } = req.body;
   let filterObj = {};
-  let categoryId = await category.find({ slug }).select("_id");
+  let categoryId = await category.findOne({ slug });
   let colorFilter = {};
-  if (categoryId[0]) {
-    filterObj.category = categoryId[0]._id;
+  let categories = await category.find({
+    $or: [{ parentId: categoryId._id }, { _id: categoryId._id }],
+  });
 
+  if (categories.length > 0) {
+    let categoryList = [];
+    categories.map((item) => {
+      categoryList.push(item._id);
+    });
+    filterObj.category = categoryList;
     if (req.body.color) {
       let colorId = await color.find({ enName: req.body.color });
 
@@ -190,11 +196,10 @@ exports.getProduct = (req, res) => {
 exports.getProductsBySort = (req, res) => {
   let sort = req.query.sort ? req.query.sort : "createdAt";
   let order = req.query.order ? req.query.order : "desc";
-  console.log({ sort, order });
   product
     .find({})
     .sort([[sort, order]])
-    .populate("productImg.img")
+    .populate("productDetails.color category productImg.img")
     .exec((err, products) => {
       if (err) return res.status(400).json(err);
       if (products) {

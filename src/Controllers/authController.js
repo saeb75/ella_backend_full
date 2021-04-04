@@ -26,7 +26,6 @@ exports.registerUser = (req, res) => {
     password,
     role: "user",
   };
-  console.log(firstName, lastName, email, password);
 
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -88,7 +87,7 @@ exports.registerUser = (req, res) => {
 
 exports.activateUserAccount = (req, res) => {
   let { token } = req.body;
-  console.log(token);
+
   if (token) {
     jwt.verify(token, process.env.ACTIVATION_JWT, async (err, decode) => {
       if (err) {
@@ -139,7 +138,7 @@ exports.getAllEmail = (req, res) => {
 
 exports.signinUser = (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
+
   user.findOne({ email }).exec((err, user) => {
     if (err || !user)
       return res.status(400).json({
