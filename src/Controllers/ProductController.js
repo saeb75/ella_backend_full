@@ -92,6 +92,8 @@ exports.deleteProduct = (req, res) => {
 };
 
 exports.getProductsByCategories = async (req, res) => {
+  let sort = req.body.sort ? req.body.sort : "createdAt";
+  let order = req.body.order ? req.body.order : "desc";
   let { slug, size, brand } = req.body;
   let filterObj = {};
   let categoryId = await category.findOne({ slug });
@@ -151,6 +153,7 @@ exports.getProductsByCategories = async (req, res) => {
 
     Product.find(filterObj)
       .populate("category productImg.img productDetails.color")
+      .sort([[sort, order]])
       .exec((err, products) => {
         if (err) return res.status(400).json(err);
         if (products) {
